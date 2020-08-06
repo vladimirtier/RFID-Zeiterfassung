@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns:nsd="http://structorizer.fisch.lu/" version="3.26-05" preRepeat="until " postFor="to" preReturn="return" postForIn="in" preWhile="while " output="OUTPUT" input="INPUT" preFor="for" preExit="exit" preLeave="leave" ignoreCase="true" preForIn="foreach" stepFor="by" author="temp.user" created="2020-06-25" changedby="temp.user" changed="2020-06-26" text="&#34;Struktogramm Hauptprogramm&#34;" comment="" color="ffffff" type="program" style="abbr">
+	<children>
+		<call text="&#34;LCD Initialisierung&#34;" comment="" color="ffffff" disabled="0"></call>
+		<call text="&#34;SPI Initialisierung&#34;" comment="" color="ffffff" disabled="0"></call>
+		<call text="&#34;RFID Initialisierung&#34;" comment="" color="ffffff" disabled="0"></call>
+		<call text="&#34;SD-Reader Initialisierung&#34;" comment="" color="ffffff" disabled="0"></call>
+		<instruction text="&#34;VAriabel Initialisierung&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+		<call text="&#34;Funktion Aufruf&#34;,&#34;&#34;&#34;Zeit&#34;&#34; mit Zeitanzeige auf LCD &#34;" comment="&#34;&#34;" color="ffffff" disabled="0"></call>
+		<call text="&#34;Funktion Aufruf&#34;,&#34;&#34;&#34;Card_check&#34;&#34;&#34;" comment="&#34;&#34;" color="ffffff" disabled="0"></call>
+		<alternative text="&#34;if Taster Kommen getastet&#34;" comment="" color="ffffff" disabled="0">
+			<qTrue>
+				<instruction text="&#34;Zustand come = 1 Gespeichert&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+			</qTrue>
+			<qFalse color="ffffff">
+			</qFalse>
+		</alternative>
+		<alternative text="&#34;if Taster &#34;&#34;Gehen&#34;&#34; getastet &#34;" comment="" color="ffffff" disabled="0">
+			<qTrue>
+				<instruction text="&#34;Zustand leave = 1 Gespeichert&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+			</qTrue>
+			<qFalse color="ffffff">
+			</qFalse>
+		</alternative>
+		<alternative text="&#34;if Taster &#34;&#34;Info&#34;&#34; getastet &#34;" comment="" color="ffffff" disabled="0">
+			<qTrue>
+				<instruction text="&#34;Wird &#34;&#34;Noch nicht Programmiert&#34;&#34; auf LCD gezeigt&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+			</qTrue>
+			<qFalse color="ffffff">
+			</qFalse>
+		</alternative>
+		<call text="&#34;Funktion &#34;&#34;log_out_check&#34;&#34; aufruf&#34;" comment="" color="ffffff" disabled="0"></call>
+		<alternative text="&#34; if ((come == 1) || (leave == 1))&#34;" comment="" color="ffffff" disabled="0">
+			<qTrue>
+				<instruction text="&#34;Auf LCD wird &#34;&#34;Bitte anmelden&#34;&#34; gezeigt; PORTC |= 0x08( bedeutet LED an)&#34;" comment="&#34;&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+				<while text="&#34;registration != 1&#34;" comment="" color="ffffff" disabled="0">
+					<qWhile>
+						<alternative text="&#34;warte zeit für Anmeldung == 7 Sekunden &#34;" comment="" color="ffffff" disabled="0">
+							<qTrue>
+								<instruction text="&#34;Registration == 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+							</qTrue>
+							<qFalse>
+								<alternative text="&#34;if (now.month() != monat)&#34;" comment="" color="ffffff" disabled="0">
+									<qTrue>
+										<instruction text="&#34;Neue File mit Neuen Monat Name wird erzeugt&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+									</qTrue>
+									<qFalse>
+										<instruction text="&#34;Monatsfile wird geöffnet zum Daten Speicherung&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+									</qFalse>
+								</alternative>
+								<alternative text="&#34;if Teg wird auf Terminal gelegt &amp;&amp; wurde erkannt &#34;" comment="" color="ffffff" disabled="0">
+									<qTrue>
+										<for text="&#34;for i &#60;- 0 to RFID.sizei&#34;" comment="" counterVar="i" startValue="0" endValue="RFID.sizei" stepConst="1" style="COUNTER" color="ffffff" disabled="0">
+											<qFor>
+												<instruction text="&#34;&#34;,&#34;readCod = (readCod &#60;&#60; 8) + mfrc522.uid.uidByte[i];&#34;" comment="&#34;Konvertieren eines Arrays von Zahlen in eine Zahl&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+											</qFor>
+										</for>
+										<for text="&#34;for i &#60;- 0 to Person&#34;" comment="" counterVar="i" startValue="0" endValue="Person" stepConst="1" style="COUNTER" color="ffffff" disabled="0">
+											<qFor>
+												<alternative text="&#34;if (Cards[i] == readCod)&#34;,&#34;a=i&#34;" comment="" color="ffffff" disabled="0">
+													<qTrue>
+														<alternative text="&#34;if ((present[a] == 1 &amp;&amp; come == 1) || (present[a] != 1 &amp;&amp; leave == 1))&#34;" comment="" color="ffffff" disabled="0">
+															<qTrue>
+																<instruction text="&#34;LCD zeigt : &#34;&#34;Falsche Anmeldung&#34;&#34;&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+															</qTrue>
+															<qFalse>
+																<instruction text="&#34;value = EEPROM.read(i);&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+																<alternative text="&#34; if (come == 1)&#34;" comment="" color="ffffff" disabled="0">
+																	<qTrue>
+																		<instruction text="&#34;present[a] = 1;&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+																	</qTrue>
+																	<qFalse color="ffffff">
+																	</qFalse>
+																</alternative>
+																<alternative text="&#34;else if (leave == 1)&#34;" comment="" color="ffffff" disabled="0">
+																	<qTrue>
+																		<instruction text="&#34;present[a] = 0;&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+																	</qTrue>
+																	<qFalse color="ffffff">
+																	</qFalse>
+																</alternative>
+																<alternative text="&#34;if (come == 1)&#34;" comment="" color="ffffff" disabled="0">
+																	<qTrue>
+																		<instruction text="&#34;lcd.print (&#34;&#34;Hallo  &#34;&#34;);&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+																		<alternative text="&#34;if (value != 0)&#34;" comment="" color="ffffff" disabled="0">
+																			<qTrue>
+																				<instruction text="&#34;LCD zeigt: &#34;&#34;Melden Sie sich&#34;&#34;&#34;,&#34;EEPROM.update(i, 0); &#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+																			</qTrue>
+																			<qFalse color="ffffff">
+																			</qFalse>
+																		</alternative>
+																		<alternative text="&#34; else if (leave == 1)&#34;" comment="" color="ffffff" disabled="0">
+																			<qTrue>
+																				<instruction text="&#34;LCD zeigt: &#34;&#34;Auf wiedersehen &#34;&#34;&#34;" comment="" color="ffffff" rotated="0" disabled="0"></instruction>
+																			</qTrue>
+																			<qFalse color="ffffff">
+																			</qFalse>
+																		</alternative>
+																	</qTrue>
+																	<qFalse color="ffffff">
+																	</qFalse>
+																</alternative>
+																<instruction text="&#34;LCD zeigt &#34;&#34;Name&#34;&#34;; DateTime now = rtc.now();&#34;,&#34;Speichert Daten in File auf SD Karte&#34;" comment="&#34;&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+																<alternative text="&#34;if come == 1&#34;" comment="&#34;&#34;" color="ffffff" disabled="0">
+																	<qTrue>
+																		<instruction text="&#34;Gespeichrte Zustang auf SD &#34;&#34;Kommen&#34;&#34;&#34;,&#34;EEPROM.update(i, 1);   &#34;" comment="&#34;&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+																	</qTrue>
+																	<qFalse color="ffffff">
+																	</qFalse>
+																</alternative>
+																<alternative text="&#34;if leave == 1&#34;" comment="&#34;&#34;" color="ffffff" disabled="0">
+																	<qTrue>
+																		<instruction text="&#34;Gespeichrte Zustang auf SD  &#34;&#34;Gehen&#34;&#34;     &#34;,&#34;EEPROM.update(i, 0);       &#34;" comment="&#34;&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+																	</qTrue>
+																	<qFalse color="ffffff">
+																	</qFalse>
+																</alternative>
+																<instruction text="&#34;Speichert auf SD &#34;&#34;Name&#34;&#34;;&#34;" comment="&#34;&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+															</qFalse>
+														</alternative>
+													</qTrue>
+													<qFalse color="ffffff">
+													</qFalse>
+												</alternative>
+											</qFor>
+										</for>
+										<instruction text="&#34;Registration == 1&#34;" comment="&#34;&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+									</qTrue>
+									<qFalse color="ffffff">
+									</qFalse>
+								</alternative>
+							</qFalse>
+						</alternative>
+					</qWhile>
+				</while>
+				<instruction text="&#34; come = 0; leave = 0; registration = 0;&#34;" comment="&#34;&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+			</qTrue>
+			<qFalse>
+				<instruction text="&#34;PORTC &amp;= ~(1 &#60;&#60; PC3);&#34;,&#34;LED aus&#34;" comment="&#34;&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+			</qFalse>
+		</alternative>
+	</children>
+</root>
