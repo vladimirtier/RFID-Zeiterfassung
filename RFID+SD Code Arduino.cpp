@@ -1,17 +1,17 @@
 #include <LiquidCrystal.h>    // LCD-Load library
-#include <SPI.h>                         // SPI-Load library
-#include <MFRC522.h>            // RFID-Load library
-#include <Wire.h>                       // This library allows you to communicate with I2C devices
-#include "RTClib.h"                    // This library allows you to control and use the RTC (Real Time Clock)
-#include <SD.h>                           // The SD(Secure Digital Memory Card)library allows for reading from and writing to SD cards
-#include <EEPROM.h>               // This library allows EEPROM to use
+#include <SPI.h>              // SPI-Load library
+#include <MFRC522.h>          // RFID-Load library
+#include <Wire.h>             // This library allows you to communicate with I2C devices
+#include "RTClib.h"           // This library allows you to control and use the RTC (Real Time Clock)
+#include <SD.h>               // The SD(Secure Digital Memory Card)library allows for reading from and writing to SD cards
+#include <EEPROM.h>           // This library allows EEPROM to use
 
 
 //*******************************************  Employees assignment  **************************************************//
 
-#define Wordlenght 9                // What Length is name
+#define Wordlenght 9             // What Length is name
 //To add the employee, fill the next lines
-#define Person 4                                  // number of employees  "4"
+#define Person 4                 // number of employees  "4"
 
 #define Person1 0x865F37BB       // The card code its defined here and corresponds to the person
 #define Person2 0x70EE8115
@@ -31,12 +31,12 @@ unsigned long int Cards[Person] = {Person1, Person2, Person3, Person4}; //fill t
 
 char employee[][Wordlenght] = {employees1, employees2, employees3, employees4}; //add new employeesX
 
-int present[Person];                          // Array for save "Person are present at work"
+int present[Person];             // Array for save "Person are present at work"
 
 //*********************************************************************************************************************//
 
 File logFile;
-MFRC522 mfrc522(8, 9);                   // RFID-Recipients name Slave Select(SDA) at Pin8 and RST at pin 9
+MFRC522 mfrc522(8, 9);                // RFID-Recipients name Slave Select(SDA) at Pin8 and RST at pin 9
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2);  // This line defines which pins of the microcontroller board are used for the LCD
 RTC_DS1307 rtc;
 
@@ -57,33 +57,33 @@ int set_hour = 0;
 int set_minuts = 0;
 int set_month = 0;
 int set_day = 0;
-int address;                      // variable for save EEPROM address
+int address;                        // variable for save EEPROM address
 byte value;                         // variable for save EEPROM value
 int premission_setup;
 //********************************************************************
 
-void zeit();                               // prototype for time function
+void zeit();                       // prototype for time function
 void zeit_setup();                 // prototype for time-setup function
 void Card_check();
 void log_out_check();
 
 void setup()
 {
-    lcd.begin(16, 4);                // Im Setup wird angegeben, wie viele Zeichen und Zeilen verwendet werden. Hier: 16 Zeichen in 2 Zeilen.
-    Serial.begin(9600);         // Serielle Verbindung starten (Monitor)
-    SPI.begin();                         // SPI-Verbindung aufbauen
-    mfrc522.PCD_Init();         // Initialisierung des RFID-Empf‰ngers
+    lcd.begin(16, 4);             // Im Setup wird angegeben, wie viele Zeichen und Zeilen verwendet werden. Hier: 16 Zeichen in 2 Zeilen.
+    Serial.begin(9600);           // Serielle Verbindung starten (Monitor)
+    SPI.begin();                  // SPI-Verbindung aufbauen
+    mfrc522.PCD_Init();           // Initialisierung des RFID-Empf√§ngers
     rtc.begin();
-    DDRC = 0x08;                       // select PIN state "in" "out" for button end LED
+    DDRC = 0x08;                  // select PIN state "in" "out" for button end LED
 
     //************* Debug EEPROM memory *******************//
 /*
    while (address < 10) {
       value = EEPROM.read(address);            // reading EEPROM byte
       Serial.print("Address: ");
-      Serial.print(String(address));                 // address number
+      Serial.print(String(address));           // address number
       Serial.print(", value: ");
-      Serial.println(String(value));                   // value in address
+      Serial.println(String(value));           // value in address
       address++;
       delay(100);
    }
@@ -93,11 +93,11 @@ void setup()
 
 void loop()
 {
-    zeit();                                                                                 // function call
-    DateTime now = rtc.now();                                     // time determination for RTC
+    zeit();                                     // function call
+    DateTime now = rtc.now();                   // time determination for RTC
     Card_check();
 
-    if (PINC & 0x01)                                                            // Request button if it was pressed PINC == Arduino PIN A
+    if (PINC & 0x01)                            // Request button if it was pressed PINC == Arduino PIN A
         {
             come = 1;
         }
@@ -124,7 +124,7 @@ void loop()
   {
         lcd.setCursor(0, 1);
         lcd.print("Bitte anmelden");
-        PORTC |= 0x08;             //LED on
+        PORTC |= 0x08;                    //LED on
 
         // --- waiting period for loop "registration" --- //
 
@@ -140,7 +140,7 @@ void loop()
     // ************************************** ### Main funktion ### ********************************** //
         while (registration != 1)                  // it runs while "registration" is not equal "1"
             {
-                SD.begin (chipSelect);                // start SD and allows "reading from" and "writing to" SD cards
+                SD.begin (chipSelect);             // start SD and allows "reading from" and "writing to" SD cards
                 DateTime now = rtc.now();
 
                   //Debug waiting period
@@ -194,8 +194,8 @@ void loop()
                         }
                         if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial() )
                         {
-                            Serial.print("Gelesene UID:");                        // Show "Gelesene UID:" on Serial Monitor
-                             for (int i = 0; i < mfrc522.uid.size; i++)            // reads UID byt after byt in "for" loop
+                            Serial.print("Gelesene UID:");                              // Show "Gelesene UID:" on Serial Monitor
+                             for (int i = 0; i < mfrc522.uid.size; i++)                 // reads UID byt after byt in "for" loop
                                 {
                                     Serial.print(mfrc522.uid.uidByte[i], HEX);          // Show uid nummer on Serial Monitor
                                     readCod = (readCod << 8) + mfrc522.uid.uidByte[i];  // converting an array of numbers to one number
@@ -210,7 +210,7 @@ void loop()
                           int a; //temp variable
                           for (int i = 0; i < Person; i++)
                           {
-                            if (Cards[i] == readCod)                                                    // COMPARISON READ AND SAVED CODE
+                            if (Cards[i] == readCod)                                    // COMPARISON READ AND SAVED CODE
                             {
                               a = i;
                               if ((present[a] == 1 && come == 1) || (present[a] != 1 && leave == 1))    // status select
@@ -293,7 +293,7 @@ void loop()
                               }
                             }
                           }    lcd.clear();
-                          // Versetzt die gelesene Karte in einen Ruhemodus, um nach anderen Karten suchen zu kˆnnen.
+                          // Versetzt die gelesene Karte in einen Ruhemodus, um nach anderen Karten suchen zu k√∂nnen.
                           mfrc522.PICC_HaltA();
                           registration = 1;
                         } //Serial.println();
@@ -341,7 +341,7 @@ void zeit()
         }
       lcd.print (now.minute()); //The time should now be displayed here "minute"
       lcd.print(" ");
-      lcd.setCursor(6, 0);      // Der n‰chste ÑTextì soll nun beim zweiten Zeichen in der zweiten Reihe beginnen.
+      lcd.setCursor(6, 0);      // Der n√§chste ¬ÑText¬ì soll nun beim zweiten Zeichen in der zweiten Reihe beginnen.
       if (now.day() < 10)
         {
             lcd.print('0');
